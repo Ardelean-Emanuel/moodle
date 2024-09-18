@@ -8601,6 +8601,15 @@ class assign {
                 ($grade->grade !== null && $grade->grade != -1) ||
                 $feedbackmodified) {
             $this->update_grade($grade, !empty($formdata->addattempt));
+            $assign = clone $this->get_instance();
+            $assign->cmidnumber = $this->get_course_module()->idnumber;
+            // Set assign gradebook feedback plugin status.
+            $assign->gradefeedbackenabled = $this->is_gradebook_feedback_enabled();
+
+            // If markinganonymous is enabled then allow to release grades anonymously.
+            if (isset($assign->markinganonymous) && $assign->markinganonymous == 1) {
+                assign_update_grades($assign, $userid);
+            }
         }
 
         // We never send notifications if we have marking workflow and the grade is not released.
